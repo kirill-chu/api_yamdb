@@ -1,7 +1,7 @@
 from rest_framework import filters, mixins, viewsets
-from rest_framework.pagination import LimitOffsetPagination
-from titles.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title
 
+from .permissions import AdminOrReadOnly
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
 
@@ -15,7 +15,7 @@ class CreateDestroyListViewSet(mixins.CreateModelMixin,
 class CategoryViewSet(CreateDestroyListViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    pagination_class = LimitOffsetPagination
+    #permission_classes = (AdminOrReadOnly,) раскоммитить после создания админа
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -23,7 +23,7 @@ class CategoryViewSet(CreateDestroyListViewSet):
 class GenreViewSet(CreateDestroyListViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    pagination_class = LimitOffsetPagination
+    #permission_classes = (AdminOrReadOnly,) раскоммитить после создания админа
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -31,4 +31,4 @@ class GenreViewSet(CreateDestroyListViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    pagination_class = LimitOffsetPagination
+    #permission_classes = (AdminOrReadOnly,) раскоммитить после создания админа
