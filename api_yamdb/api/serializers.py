@@ -89,7 +89,7 @@ class CurrentTitleDefault():
     Если этот класс присвоить title CurrentUserDefault() 
     title = serializers.HiddenField(default=CurrentTitleDefault()) 
     То при добавлнении ревью ошибки {"title":["This field is required."]} нет.
-    А добавление не проходит так как, пользователь Anonimous
+    А добавление не проходит так как, пользователь AnonymousUser
     '''
     requires_context = True
 
