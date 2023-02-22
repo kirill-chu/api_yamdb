@@ -76,3 +76,24 @@ class GenreTitle(models.Model):
 
     def __str__(self):
         return f'{self.genre} {self.title}'
+class Review(models.Model):
+    # нужна модель пользователей, пока заглушка
+    author = models.IntegerField(verbose_name='author')
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE, releated_name='reviews',
+        verbose_name='title')
+    text = models.TextField(verbose_name='review')
+    score = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        verbose_name='score')
+    pub_date = models.DateTimeField(
+        verbose_name='publicaton date', auto_now_add=True)
+    
+    class Meta:
+        verbose_name ='review'
+        verbose_name_plural = 'reviews'
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'], name='unique_review' )
+        ]

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -75,3 +75,8 @@ class CreateUpdateTitleSerializer(TitleSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return TitleSerializer(instance, context=context).data
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Review

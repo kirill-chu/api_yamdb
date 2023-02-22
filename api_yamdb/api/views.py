@@ -1,10 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets
-from reviews.models import Category, Genre, Title
 
+from reviews.models import Category, Genre, Title, Review
 from .permissions import AdminOrReadOnly
 from .serializers import (CategorySerializer, CreateUpdateTitleSerializer,
-                          GenreSerializer, TitleSerializer)
+                          GenreSerializer, TitleSerializer, ReviewSerializer)
 
 
 class CreateDestroyListViewSet(mixins.CreateModelMixin,
@@ -49,3 +50,17 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'partial_update'):
             return CreateUpdateTitleSerializer
         return TitleSerializer
+    serializer_class = TitleSerializer
+    #permission_classes = (AdminOrReadOnly,) раскоммитить после создания админа
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        title_id = self.kwargs.get('title_id')
+        title = get_object_or_404(Title, id=title_id)
+        return title.reviews.all()
+
+    def perform_create(self, serializer):
+        pass
