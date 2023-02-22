@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from rest_framework import filters, generics, mixins, status, viewsets
 from rest_framework.response import Response
 from reviews.models import Category, Genre, Title, User
@@ -19,6 +20,13 @@ class SignUp(generics.CreateAPIView):
         username = request.data["username"]
         email = request.data["email"]
         if User.objects.filter(username=username).filter(email=email):
+            send_mail(
+                'Тема письма',
+                'Текст письма.',
+                'admin@yamdb.ru',
+                [email],
+                fail_silently=False,
+            ) 
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
