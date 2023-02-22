@@ -1,6 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets
+from django.core.mail import send_mail
+from rest_framework import filters, generics, mixins, status, viewsets, permissions
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from reviews.models import Category, Genre, Title, Review
 from .permissions import AdminOrReadOnly
@@ -56,6 +61,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -64,3 +70,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         pass
+        serializer.save(author=self.request.user)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+    permission_classes = (permissions.IsAuthenticated,)
