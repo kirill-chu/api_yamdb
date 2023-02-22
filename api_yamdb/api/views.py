@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
-from rest_framework import filters, generics, mixins, status, viewsets
+from rest_framework import filters, generics, mixins, status, viewsets, permissions
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from reviews.models import Category, Genre, Title, User
 
 from .permissions import AdminOrReadOnly
@@ -15,6 +17,7 @@ class CreateDestroyListViewSet(mixins.CreateModelMixin,
 
 
 class SignUp(generics.CreateAPIView):
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         username = request.data["username"]
@@ -29,6 +32,26 @@ class SignUp(generics.CreateAPIView):
                 fail_silently=False,
             ) 
             return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class Token(generics.CreateAPIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        username = request.data["username"]
+        confirmation_code = request.data["confirmation_code"]
+        user = User.objects.filter(
+            username=username
+        ).filter(
+            confirmation_code=confirmation_code
+        ).get()
+        if user:
+            refresh = RefreshToken.for_user(user)
+            response = {
+                'token': str(refresh.access_token),
+            }
+            return Response(response, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -59,3 +82,4 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+    permission_classes = (permissions.IsAuthenticated,)
