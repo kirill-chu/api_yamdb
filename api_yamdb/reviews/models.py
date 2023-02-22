@@ -77,12 +77,13 @@ class GenreTitle(models.Model):
     def __str__(self):
         return f'{self.genre} {self.title}'
 class Review(models.Model):
-    # нужна модель пользователей, пока заглушка
-    author = models.IntegerField(verbose_name='author')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews',
+        verbose_name='author')
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews',
         verbose_name='title')
-    text = models.TextField(verbose_name='review')
+    text = models.TextField(verbose_name='text')
     score = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         verbose_name='score')

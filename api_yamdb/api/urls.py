@@ -3,13 +3,16 @@ from rest_framework import routers
 from users.views import NewTokenView, SignUp, UserViewSet
 
 from .views import CategoryViewSet, GenreViewSet, TitleViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .views import (CategoryViewSet, GenreViewSet, SignUp, TitleViewSet, Token,
+                    UserViewSet, ReviewViewSet)
 
 router_v1 = routers.DefaultRouter()
 router_v1.register('categories', CategoryViewSet)
 router_v1.register('genres', GenreViewSet)
 router_v1.register('titles', TitleViewSet)
 router_v1.register('users', UserViewSet)
-router_v1.register(r'titles/(?P<title_id>\d+)/reviews', TitleViewSet,
+router_v1.register(r'titles/(?P<title_id>\d+)/reviews', ReviewViewSet,
                    basename='reviews')
 
 urlpatterns = [
