@@ -19,10 +19,11 @@ class SignUp(generics.CreateAPIView):
     def post(self, request):
         username = request.data["username"]
         email = request.data["email"]
-        if User.objects.filter(username=username).filter(email=email):
+        user = User.objects.filter(username=username).filter(email=email).get()
+        if user:
             send_mail(
-                'Тема письма',
-                'Текст письма.',
+                'code',
+                f'confirmation_code = {user.confirmation_code}',
                 'admin@yamdb.ru',
                 [email],
                 fail_silently=False,
