@@ -80,7 +80,7 @@ class Review(models.Model):
     # нужна модель пользователей, пока заглушка
     author = models.IntegerField(verbose_name='author')
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, releated_name='reviews',
+        Title, on_delete=models.CASCADE, related_name='reviews',
         verbose_name='title')
     text = models.TextField(verbose_name='review')
     score = models.IntegerField(
