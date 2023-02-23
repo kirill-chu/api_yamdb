@@ -86,17 +86,18 @@ class CreateUpdateTitleSerializer(TitleSerializer):
 =======
 class CurrentTitleDefault():
     '''
-    Если этот класс присвоить title CurrentUserDefault() 
-    title = serializers.HiddenField(default=CurrentTitleDefault()) 
-    То при добавлнении ревью ошибки {"title":["This field is required."]} нет.
-    А добавление не проходит так как, пользователь AnonymousUser
+    Не придумал ничего лучше как забрать title_id. Сделал по аналогии с готовой
+    CurrentUserDefault()
     '''
     requires_context = True
 
     def __call__(self, serializer_field):
+        '''
+        Можно возвращать не номер из контекста, а делать get из модели
+        и возваращать объект Title, но пока решил остановиться на номере.
+        Очень нехватает аутентификации, чтобы все потестить.
+        '''
         context=serializer_field.context['request'].parser_context
-        '''Можно возвращать не номер из контекста, а делать get из модели
-        и возваращать объект Title.'''
         return context.get('kwargs').get('title_id')
 
 >>>>>>> d93a727 (добавил валидатор UniqueTogetherValidator. Есть проблема с добавлением)
@@ -105,7 +106,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault())
     title = serializers.SlugRelatedField(
-        slug_field='id', queryset=Title.objects.all())
+        slug_field='id', read_only=True, default=CurrentTitleDefault())
 
     class Meta:
         fields = '__all__'
