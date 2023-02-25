@@ -2,6 +2,7 @@ from rest_framework import permissions
 
 
 class AdminOrReadOnly(permissions.BasePermission):
+    """Object-level permission to only allow admins to edit."""
 
     def has_permission(self, request, view):
         return (

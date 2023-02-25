@@ -40,20 +40,42 @@ class Title(models.Model):
         ],
         verbose_name='year'
     )
-    rating = models.IntegerField(blank=True, null=True) #пока нет модели
     description = models.TextField(
         blank=True, null=True, verbose_name='description'
     )
-    сategory = models.ForeignKey(
+    category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
-        related_name='titles', blank=True, null=True)
+        related_name='category', null=True
+    )
     genre = models.ManyToManyField(
-        Genre, #on_delete=models.SET_NULL, - нужна промежуточная модель
-        related_name='titles')
+        Genre, through='GenreTitle', related_name='genre'
+    )
     
     class Meta:
         verbose_name = 'title'
         verbose_name_plural = 'titles'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'year', 'category'),
+                name='unique_title'
+            )
+        ]
 
     def __str__(self):
         return self.name
+
+
+class GenreTitle(models.Model):
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('genre', 'title'),
+                name='unique_genre_title'
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.genre} {self.title}'
