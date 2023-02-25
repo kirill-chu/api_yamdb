@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     'api',
     'reviews',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,7 @@ DATABASES = {
 
 # Set new User Model
 
-AUTH_USER_MODEL = 'reviews.User'
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 
@@ -124,9 +125,8 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    "AUTH_HEADER_NAME": "Authorization",
-} 
+    'AUTH_HEADER_TYPES': ('Bearer:',),
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
