@@ -30,4 +30,6 @@ class Command(BaseCommand):
                 print(f'Data successfully loaded into {model.__name__}\n')
             except Exception as erorr:
                 print(erorr)
-                print(f'We have problem with data or {model.__name__} model\n')
+                print(
+                    f'We have a problem with data or {model.__name__} model\n'
+                )
