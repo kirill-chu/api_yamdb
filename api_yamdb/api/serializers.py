@@ -23,6 +23,7 @@ class GenreSerializer(serializers.ModelSerializer):
         max_length=50,
         validators=[UniqueValidator(queryset=Genre.objects)]
     )
+
     class Meta:
         fields = ('name', 'slug')
         model = Genre
@@ -60,7 +61,7 @@ class CreateUpdateTitleSerializer(TitleSerializer):
                 fields=('name', 'year', 'category')
             )
         ]
-    
+
     def validate_year(self, value):
         if not (0 <= value <= datetime.now().year):
             raise serializers.ValidationError('Check year')
