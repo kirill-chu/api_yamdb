@@ -2,13 +2,14 @@ from csv import DictReader
 
 from django.core.management.base import BaseCommand
 from reviews.models import Category, Genre, Title
+from users.models import User
 
 DATAPATH = {
     Category: 'static/data/category.csv',
     Genre: 'static/data/genre.csv',
     Title: 'static/data/titles.csv',
     Title.genre.through: 'static/data/genre_title.csv',
-    # User: 'static/data/users.csv',
+    User: 'static/data/users.csv',
     # Review: 'static/data/review.csv',
     # Comment: 'static/data/comments.csv',
 }

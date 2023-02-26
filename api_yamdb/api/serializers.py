@@ -7,6 +7,7 @@ from reviews.models import Category, Genre, Title
 
 class CategorySerializer(serializers.ModelSerializer):
     """A serializer for Category instances."""
+
     slug = serializers.SlugField(
         max_length=50,
         validators=[UniqueValidator(queryset=Category.objects)]
@@ -19,6 +20,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class GenreSerializer(serializers.ModelSerializer):
     """A serializer for Genre instances."""
+
     slug = serializers.SlugField(
         max_length=50,
         validators=[UniqueValidator(queryset=Genre.objects)]
@@ -31,6 +33,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     """A serializer for read/destroy Title instances."""
+
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
@@ -45,6 +48,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class CreateUpdateTitleSerializer(TitleSerializer):
     """A serializer for create/update Title instances."""
+
     category = serializers.SlugRelatedField(
         slug_field='slug', queryset=Category.objects
     )
