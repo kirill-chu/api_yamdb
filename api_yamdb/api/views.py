@@ -9,11 +9,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import (
     IsAuthenticated, IsAuthenticatedOrReadOnly)
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 from .permissions import AdminOrReadOnly
 from .serializers import (CategorySerializer, CreateUpdateTitleSerializer,
                           GenreSerializer, TitleSerializer, ReviewSerializer,
-                          UserSerializer)
+                          UserSerializer, CommentSerializer)
 
 User = get_user_model()
 
@@ -85,3 +85,13 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     permission_classes = (permissions.IsAuthenticated,)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, id=review_id)
+        return review.comments.all()

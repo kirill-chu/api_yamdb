@@ -2,7 +2,7 @@ from datetime import datetime
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from reviews.models import Category, Genre, Title, Review
+from reviews.models import Category, Genre, Title, Review, Comment
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -120,3 +120,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = User
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        fields = '__all__'
+        model = Comment
