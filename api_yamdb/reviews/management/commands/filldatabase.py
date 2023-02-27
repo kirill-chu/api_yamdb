@@ -1,7 +1,7 @@
 from csv import DictReader
 
 from django.core.management.base import BaseCommand
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review, Comment
 from users.models import User
 
 DATAPATH = {
@@ -10,8 +10,8 @@ DATAPATH = {
     Title: 'static/data/titles.csv',
     Title.genre.through: 'static/data/genre_title.csv',
     User: 'static/data/users.csv',
-    # Review: 'static/data/review.csv',
-    # Comment: 'static/data/comments.csv',
+    Review: 'static/data/review.csv',
+    Comment: 'static/data/comments.csv',
 }
 
 

@@ -1,15 +1,11 @@
 from datetime import datetime
 
 from rest_framework import serializers
-<<<<<<< HEAD
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from reviews.models import Category, Genre, Title, Review
-=======
-from rest_framework.validators import UniqueTogetherValidator
+from reviews.models import Category, Genre, Title, Review, Comment
+from django.contrib.auth import get_user_model
 
-from reviews.models import Category, Genre, Title, Review, User
->>>>>>> d93a727 (добавил валидатор UniqueTogetherValidator. Есть проблема с добавлением)
-
+User = get_user_model()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -49,7 +45,6 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Title
 
-<<<<<<< HEAD
     def get_rating(self, obj):
         return 10
 
@@ -83,36 +78,34 @@ class CreateUpdateTitleSerializer(TitleSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return TitleSerializer(instance, context=context).data
-=======
+
+
 class CurrentTitleDefault():
     '''
-    Не придумал ничего лучше как забрать title_id. Сделал по аналогии с готовой
-    CurrentUserDefault()
+    Если этот класс присвоить title CurrentUserDefault() 
+    title = serializers.HiddenField(default=CurrentTitleDefault()) 
+    То при добавлнении ревью ошибки {"title":["This field is required."]} нет.
+    А добавление не проходит так как, пользователь Anonimous
     '''
     requires_context = True
 
     def __call__(self, serializer_field):
-        '''
-        Можно возвращать не номер из контекста, а делать get из модели
-        и возваращать объект Title, но пока решил остановиться на номере.
-        Очень нехватает аутентификации, чтобы все потестить.
-        '''
         context=serializer_field.context['request'].parser_context
+        '''Можно возвращать не номер из контекста, а делать get из модели
+        и возваращать объект Title.'''
         return context.get('kwargs').get('title_id')
 
->>>>>>> d93a727 (добавил валидатор UniqueTogetherValidator. Есть проблема с добавлением)
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault())
-    title = serializers.SlugRelatedField(
-        slug_field='id', read_only=True, default=CurrentTitleDefault())
+    # title = serializers.SlugRelatedField(
+    #    slug_field='id', queryset=Title.objects.all())
+    title = serializers.HiddenField(default =CurrentTitleDefault())
 
     class Meta:
         fields = '__all__'
         model = Review
-<<<<<<< HEAD
-=======
 
         constraints = [
             UniqueTogetherValidator(
@@ -127,4 +120,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = User
->>>>>>> d93a727 (добавил валидатор UniqueTogetherValidator. Есть проблема с добавлением)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        fields = '__all__'
+        model = Comment
