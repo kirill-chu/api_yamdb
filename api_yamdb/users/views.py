@@ -50,7 +50,7 @@ class NewTokenView(generics.CreateAPIView):
                 username=serializer["username"],
                 confirmation_code=serializer["confirmation_code"]
             ).exists():
-                refresh = RefreshToken.for_user(user)
+                refresh = RefreshToken.for_user(serializer["username"])
                 resp = {
                     'token': str(refresh.access_token),
                 }
