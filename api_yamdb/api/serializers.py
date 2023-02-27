@@ -1,10 +1,11 @@
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from reviews.models import Category, Genre, Title, Review, Comment
+from reviews.models import Category, Comment, Genre, Review, Title
 
-from users.models import User
+User = get_user_model()
 
 
 class CategorySerializer(serializers.ModelSerializer):

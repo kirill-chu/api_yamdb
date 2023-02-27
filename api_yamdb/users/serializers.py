@@ -1,6 +1,9 @@
 """Serializers file for Users App."""
-from rest_framework import serializers, validators
-from .models import User
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+User = get_user_model()
+
 
 class SugnUpSerializer(serializers.ModelSerializer):
     """SugnUp serializer for Users App."""
@@ -14,7 +17,7 @@ class SugnUpSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
-    """SugnUp serializer for Users App."""
+    """Token serializer for Users App."""
 
     class Meta:
         fields = (
@@ -24,12 +27,12 @@ class TokenSerializer(serializers.ModelSerializer):
         model = User
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     """User serializer for Users App."""
+
     email = serializers.CharField(max_length=254)
-    first_name = serializers.CharField(max_length=150, required = False)
-    last_name = serializers.CharField(max_length=150, required = False)
+    first_name = serializers.CharField(max_length=150, required=False)
+    last_name = serializers.CharField(max_length=150, required=False)
 
     class Meta:
         fields = (
