@@ -1,21 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, mixins, viewsets
-from django.core.mail import send_mail
-from rest_framework import filters, generics, mixins, status, viewsets, permissions
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import (
-    IsAuthenticated, IsAuthenticatedOrReadOnly)
+from rest_framework import filters, mixins, viewsets, permissions
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.models import Category, Genre, Title, Review
 from .permissions import AdminOrReadOnly
 from .serializers import (CategorySerializer, CreateUpdateTitleSerializer,
                           GenreSerializer, TitleSerializer, ReviewSerializer,
-                          UserSerializer, CommentSerializer)
-
-User = get_user_model()
+                           CommentSerializer)
 
 
 class CreateDestroyListViewSet(mixins.CreateModelMixin,
@@ -77,14 +69,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         pass
         serializer.save(author=self.request.user)
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('username',)
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

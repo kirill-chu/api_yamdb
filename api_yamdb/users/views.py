@@ -18,8 +18,11 @@ class SignUp(generics.CreateAPIView):
         """GET confirmation_code."""
         username = request.data["username"]
         email = request.data["email"]
-        user = get_object_or_404(User, username=username, email=email)
-        if user:
+        try:
+            user = User.objects.filter(
+                username=username,
+                email=email
+            ).get()
             send_mail(
                 'code',
                 f'confirmation_code = {user.confirmation_code}',
@@ -28,7 +31,11 @@ class SignUp(generics.CreateAPIView):
                 fail_silently=False,
             )
             return Response(request.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            resp = {
+                'response': str("invalid data."),
+            }
+            return Response(resp, status=status.HTTP_400_BAD_REQUEST)
 
 
 class NewTokenView(generics.CreateAPIView):
@@ -39,19 +46,21 @@ class NewTokenView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         username = request.data["username"]
         confirmation_code = request.data["confirmation_code"]
-        user = get_object_or_404(
-            User,
-            username=username,
-            confirmation_code=confirmation_code
-        )
-        if user:
+        try:
+            user = User.objects.filter(
+                username=username, 
+                confirmation_code=confirmation_code
+            ).get()
             refresh = RefreshToken.for_user(user)
             resp = {
                 'token': str(refresh.access_token),
             }
             return Response(resp, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
+        except:
+            resp = {
+                'response': str("invalid data."),
+            }
+            return Response(resp, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
