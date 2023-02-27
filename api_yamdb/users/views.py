@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, SugnUpSerializer, TokenSerializer
 
 
 class SignUp(generics.CreateAPIView):
     """Class for retrive conconfirmation_code."""
-
+    serializer_class = SugnUpSerializer
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
@@ -32,15 +32,12 @@ class SignUp(generics.CreateAPIView):
             )
             return Response(request.data, status=status.HTTP_200_OK)
         except:
-            resp = {
-                'response': str("invalid data."),
-            }
-            return Response(resp, status=status.HTTP_400_BAD_REQUEST)
+            return Response( status=status.HTTP_400_BAD_REQUEST)
 
 
 class NewTokenView(generics.CreateAPIView):
     """Class for retrive new Auth token."""
-
+    serializer_class = TokenSerializer
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):

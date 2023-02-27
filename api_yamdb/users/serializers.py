@@ -2,6 +2,29 @@
 from rest_framework import serializers, validators
 from .models import User
 
+class SugnUpSerializer(serializers.ModelSerializer):
+    """SugnUp serializer for Users App."""
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+        )
+        model = User
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    """SugnUp serializer for Users App."""
+
+    class Meta:
+        fields = (
+            'username',
+            'confirmation_code',
+        )
+        model = User
+
+
+
 class UserSerializer(serializers.ModelSerializer):
     """User serializer for Users App."""
     email = serializers.CharField(max_length=254)
