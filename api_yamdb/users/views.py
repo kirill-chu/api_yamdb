@@ -16,7 +16,9 @@ class SignUp(generics.CreateAPIView):
     def post(self, request):
         """GET confirmation_code."""
         serializer = self.get_serializer(data=request.data)
+        print("111111")
         if serializer.is_valid():
+            print("22222")
             if User.objects.filter(
                 username=serializer["username"],
                 email=serializer["email"]

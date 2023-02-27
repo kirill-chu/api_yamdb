@@ -12,16 +12,16 @@ ROLES = [
 class User(AbstractUser):
     bio = models.TextField(
         'Биография',
-        blank = True,
+        blank=True,
     )
     role = models.CharField(
         'Роль',
-        max_length = 9,
+        max_length=9,
         choices=ROLES,
         default='user',
     )
     confirmation_code = models.CharField(
         'Код подтверждения',
         max_length=16,
-        blank = True,
+        blank=True,
     )
