@@ -62,7 +62,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """A viewset for Reviews."""
 
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerAdminModeratorOrReadOnly)
+    permission_classes = (
+        IsAuthenticatedOrReadOnly, IsOwnerAdminModeratorOrReadOnly)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')

@@ -17,14 +17,6 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         )
 
 
-class IsAuthorOrReadOnly(permissions.BasePermission):
-    message = "Only owner can perform this."
-
-    def has_object_permission(self, request, view, obj):
-        return ((request.method in permissions.SAFE_METHODS)
-                or (request.user.id == obj.author_id))
-
-
 class IsOwnerAdminModeratorOrReadOnly(permissions.BasePermission):
     message = "Only owner or moderator can perform this."
 
