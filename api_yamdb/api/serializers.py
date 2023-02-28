@@ -1,9 +1,9 @@
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from reviews.models import Category, Genre, Title, Review, Comment
-from django.contrib.auth import get_user_model
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -46,7 +46,12 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def get_rating(self, obj):
-        return 10
+        if not Review.objects.filter(title=obj).exists():
+            return None
+        scores = Review.objects.filter(title=obj).values_list(
+            'score', flat=True
+        )
+        return int(sum(scores) / len(scores))
 
 
 class CreateUpdateTitleSerializer(TitleSerializer):
@@ -82,18 +87,20 @@ class CreateUpdateTitleSerializer(TitleSerializer):
 
 class CurrentTitleDefault():
     '''
-    Если этот класс присвоить title CurrentUserDefault() 
-    title = serializers.HiddenField(default=CurrentTitleDefault()) 
+    Если этот класс присвоить title CurrentUserDefault()
+    title = serializers.HiddenField(default=CurrentTitleDefault())
     То при добавлнении ревью ошибки {"title":["This field is required."]} нет.
     А добавление не проходит так как, пользователь Anonimous
     '''
+
     requires_context = True
 
     def __call__(self, serializer_field):
-        context=serializer_field.context['request'].parser_context
+        context = serializer_field.context['request'].parser_context
         '''Можно возвращать не номер из контекста, а делать get из модели
         и возваращать объект Title.'''
         return context.get('kwargs').get('title_id')
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -101,7 +108,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault())
     # title = serializers.SlugRelatedField(
     #    slug_field='id', queryset=Title.objects.all())
-    title = serializers.HiddenField(default =CurrentTitleDefault())
+    title = serializers.HiddenField(default=CurrentTitleDefault())
 
     class Meta:
         fields = '__all__'
@@ -123,7 +130,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         fields = '__all__'
         model = Comment

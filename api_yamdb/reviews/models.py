@@ -1,8 +1,8 @@
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -94,16 +94,16 @@ class Review(models.Model):
         verbose_name='score')
     pub_date = models.DateTimeField(
         verbose_name='publicaton date', auto_now_add=True)
-    
+
     class Meta:
-        verbose_name ='review'
+        verbose_name = 'review'
         verbose_name_plural = 'reviews'
 
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'], name='unique_review' )
+                fields=['author', 'title'], name='unique_review')
         ]
-    
+
     def __str__(self):
         return self.text
 
@@ -118,10 +118,10 @@ class Comment(models.Model):
         verbose_name='author')
     pub_date = models.DateTimeField(
         verbose_name='publication date', auto_now_add=True)
-    
+
     class Meta:
-        verbose_name ='comment'
+        verbose_name = 'comment'
         verbose_name_plural = 'comments'
-    
+
     def __str__(self):
         return self.text
