@@ -12,7 +12,7 @@ api_yamdb
     python3 manage.py migrate
 
 - Для заполнения базы данных из CSV-файлов выполните команду:
-    python3 manage.py runserver
+    python3 manage.py filldatabase
 
 - Запустить проект:
     python3 manage.py runserver
