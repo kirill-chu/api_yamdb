@@ -14,6 +14,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=150, validators=[regexp_validator]
     )
+    email = serializers.CharField(max_length=254, required=True)
 
     def validate_username(self, value):
         if value.lower() == 'me':
