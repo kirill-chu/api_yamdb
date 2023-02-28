@@ -5,28 +5,6 @@ from rest_framework import serializers
 User = get_user_model()
 
 
-class SugnUpSerializer(serializers.ModelSerializer):
-    """SugnUp serializer for Users App."""
-
-    class Meta:
-        fields = (
-            'username',
-            'email',
-        )
-        model = User
-
-
-class TokenSerializer(serializers.ModelSerializer):
-    """Token serializer for Users App."""
-
-    class Meta:
-        fields = (
-            'username',
-            'confirmation_code',
-        )
-        model = User
-
-
 class UserSerializer(serializers.ModelSerializer):
     """User serializer for Users App."""
 
