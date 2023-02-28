@@ -121,8 +121,25 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CurrentReviewDefault():
+    '''Function receive review id from path parameter.'''
+    requires_context = True
 
+    def __call__(self, serializer_field):
+        context=serializer_field.context['request'].parser_context
+        review = get_object_or_404(
+            Review, id=context.get('kwargs').get('review_id'))
+        return review
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    '''Serializer for Comment instance.'''
+
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True,
+        default=serializers.CurrentUserDefault())
+    review = serializers.HiddenField(default =CurrentReviewDefault())
+    
     class Meta:
         fields = '__all__'
         model = Comment

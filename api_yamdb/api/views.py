@@ -89,9 +89,13 @@ class CommentViewSet(viewsets.ModelViewSet):
     """A viewset for Comments."""
 
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (
+        IsAuthenticatedOrReadOnly, IsOwnerAdminModeratorOrReadOnly)
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
