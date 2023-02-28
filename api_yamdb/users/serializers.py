@@ -1,11 +1,19 @@
 """Serializers file for Users App."""
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 from rest_framework import serializers
 
 User = get_user_model()
 
 
 class SignUpSerializer(serializers.ModelSerializer):
+    regexp_validator = RegexValidator(
+        r'^[\w.@+-]+\Z',
+        message='not valid regexp'
+    )
+    username = serializers.CharField(
+        max_length=150, validators=[regexp_validator]
+    )
 
     def validate_username(self, value):
         if value.lower() == 'me':
