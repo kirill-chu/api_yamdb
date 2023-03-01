@@ -12,6 +12,8 @@ from .models import User
 from .permissions import IsAdmin
 from .serializers import MeSerializer, UserSerializer, SignUpSerializer
 
+class GetPatchView(generics.UpdateAPIView,generics.RetrieveAPIView):
+    pass
 
 class SignUpView(generics.CreateAPIView):
     """Class for retrive conconfirmation_code."""
@@ -96,20 +98,18 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
 
 
-class MeView(generics.GenericAPIView):
+class MeView(GetPatchView):
     queryset = User.objects.all()
     serializer_class = MeSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_queryset(self):
-        return self.request.user 
-
     def get(self, request):
         resp = MeSerializer(request.user, context=request).data
         return Response(resp, status=status.HTTP_200_OK)
-    
-    def patch(self,request):
+
+    def partial_update(self,request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.update(request.user,serializer.validated_data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer.update(request.user, serializer.validated_data)
+        resp = MeSerializer(request.user).data
+        return Response(resp, status=status.HTTP_200_OK)
