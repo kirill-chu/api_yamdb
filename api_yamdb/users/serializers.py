@@ -6,9 +6,9 @@ from rest_framework import serializers
 User = get_user_model()
 
 regexp_validator = RegexValidator(
-        r'^[\w.@+-]+\Z',
-        message='not valid regexp'
-    )
+    r'^[\w.@+-]+\Z',
+    message='not valid regexp'
+)
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -19,6 +19,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         max_length=254,
     )
+
     def validate_username(self, value):
         if value.lower() == 'me':
             raise serializers.ValidationError(
@@ -62,9 +63,11 @@ class MeSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=150,
         validators=[regexp_validator],
+        required=False
     )
     email = serializers.EmailField(
         max_length=254,
+        required=False
     )
 
     class Meta:

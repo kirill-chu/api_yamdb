@@ -107,7 +107,7 @@ class MeView(GetPatchView):
         resp = MeSerializer(request.user, context=request).data
         return Response(resp, status=status.HTTP_200_OK)
 
-    def partial_update(self,request):
+    def partial_update(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.update(request.user, serializer.validated_data)
