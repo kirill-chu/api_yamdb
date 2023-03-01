@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework import routers
-from users.views import NewTokenView, SignUp, UserViewSet
+from users.views import MeView, NewTokenView, SignUpView, UserViewSet
 
 from .views import (CategoryViewSet, GenreViewSet, TitleViewSet,
                     ReviewViewSet, CommentViewSet)
@@ -17,7 +17,8 @@ router_v1.register(
     CommentViewSet, basename='comments')
 
 urlpatterns = [
-    path('v1/', include(router_v1.urls)),
-    path('v1/auth/signup/', SignUp.as_view()),
+    path('v1/auth/signup/', SignUpView.as_view()),
     path('v1/auth/token/', NewTokenView.as_view()),
+    path('v1/users/me/', MeView.as_view()),
+    path('v1/', include(router_v1.urls)),
 ]

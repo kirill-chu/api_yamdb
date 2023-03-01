@@ -4,15 +4,16 @@ import string
 
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, generics, permissions, status, viewsets
+from rest_framework import filters, generics, permissions, status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
-from .serializers import UserSerializer, SignUpSerializer
+from .permissions import IsAdmin
+from .serializers import MeSerializer, UserSerializer, SignUpSerializer
 
 
-class SignUp(generics.CreateAPIView):
+class SignUpView(generics.CreateAPIView):
     """Class for retrive conconfirmation_code."""
 
     permission_classes = (permissions.AllowAny,)
@@ -42,7 +43,7 @@ class SignUp(generics.CreateAPIView):
                 username=username,
                 email=email
             ).get()
-            user.confirmation_code = self.get_code
+            user.confirmation_code = self.get_code()
             user.save()
             self.send_code(user.confirmation_code, user.email)
             return Response(request.data, status=status.HTTP_200_OK)
@@ -90,5 +91,25 @@ class NewTokenView(generics.CreateAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (IsAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+
+
+class MeView(generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = MeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.request.user 
+
+    def get(self, request):
+        resp = MeSerializer(request.user, context=request).data
+        return Response(resp, status=status.HTTP_200_OK)
+    
+    def patch(self,request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.update(request.user,serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
