@@ -4,7 +4,7 @@ import string
 
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, generics, permissions, status, viewsets, mixins
+from rest_framework import filters, generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -12,8 +12,10 @@ from .models import User
 from .permissions import IsAdmin
 from .serializers import MeSerializer, UserSerializer, SignUpSerializer
 
-class GetPatchView(generics.UpdateAPIView,generics.RetrieveAPIView):
+
+class GetPatchView(generics.UpdateAPIView, generics.RetrieveAPIView):
     pass
+
 
 class SignUpView(generics.CreateAPIView):
     """Class for retrive conconfirmation_code."""
