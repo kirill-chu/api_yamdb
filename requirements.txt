@@ -7,10 +7,3 @@ PyJWT==2.1.0
 pytest==6.2.4
 pytest-django==4.4.0
 pytest-pythonpath==0.7.3
-#code linters
-flake8==3.9.2
-flake8-docstrings
-flake8-broken-line
-flake8-return
-flake8-isort==5.0.3
-pep8-naming
