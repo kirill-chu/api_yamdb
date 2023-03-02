@@ -84,23 +84,23 @@ class CreateUpdateTitleSerializer(TitleSerializer):
 
 
 class CurrentTitleDefault():
-    '''Function receive title id from path parameter.'''
+    """Function receive title id from path parameter."""
+
     requires_context = True
 
     def __call__(self, serializer_field):
-        context=serializer_field.context['request'].parser_context
-        title = get_object_or_404(
+        context = serializer_field.context['request'].parser_context
+        return get_object_or_404(
             Title, id=context.get('kwargs').get('title_id'))
-        return title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    '''Serializer for Review instance.'''
+    """Serializer for Review instance."""
 
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault())
-    title = serializers.HiddenField(default =CurrentTitleDefault())
+    title = serializers.HiddenField(default=CurrentTitleDefault())
 
     class Meta:
         fields = '__all__'
@@ -122,24 +122,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CurrentReviewDefault():
-    '''Function receive review id from path parameter.'''
+    """Function receive review id from path parameter."""
+
     requires_context = True
 
     def __call__(self, serializer_field):
-        context=serializer_field.context['request'].parser_context
-        review = get_object_or_404(
+        context = serializer_field.context['request'].parser_context
+        return get_object_or_404(
             Review, id=context.get('kwargs').get('review_id'))
-        return review
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    '''Serializer for Comment instance.'''
+    """Serializer for Comment instance."""
 
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault())
-    review = serializers.HiddenField(default =CurrentReviewDefault())
-    
+    review = serializers.HiddenField(default=CurrentReviewDefault())
+
     class Meta:
         fields = '__all__'
         model = Comment

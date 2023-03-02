@@ -10,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .permissions import IsAdmin
-from .serializers import MeSerializer, UserSerializer, SignUpSerializer
+from .serializers import MeSerializer, SignUpSerializer, UserSerializer
 
 
 class GetPatchView(generics.UpdateAPIView, generics.RetrieveAPIView):

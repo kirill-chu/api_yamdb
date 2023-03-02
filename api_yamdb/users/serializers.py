@@ -53,6 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class MeSerializer(serializers.ModelSerializer):
     """User serializer for Users App."""
+
     username = serializers.CharField(
         max_length=150,
         validators=[regexp_validator],

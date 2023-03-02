@@ -52,3 +52,6 @@ class User(AbstractUser):
         max_length=16,
         blank=True,
     )
+
+    class Meta:
+        ordering = ['username']

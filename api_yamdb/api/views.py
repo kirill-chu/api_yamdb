@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, permissions, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 from reviews.models import Category, Genre, Review, Title
 
 from .filters import TitleFilter
@@ -96,6 +97,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         review_id = self.kwargs.get('review_id')
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
-    
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

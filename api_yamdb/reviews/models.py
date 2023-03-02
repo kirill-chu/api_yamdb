@@ -14,6 +14,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -26,6 +27,7 @@ class Genre(models.Model):
     class Meta:
         verbose_name = 'genre'
         verbose_name_plural = 'genres'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -54,6 +56,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'title'
         verbose_name_plural = 'titles'
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(
                 fields=('name', 'year', 'category'),
@@ -98,6 +101,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'review'
         verbose_name_plural = 'reviews'
+        ordering = ['-pub_date']
 
         constraints = [
             models.UniqueConstraint(
@@ -122,6 +126,7 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'comment'
         verbose_name_plural = 'comments'
+        ordering = ['pub_date']
 
     def __str__(self):
         return self.text
