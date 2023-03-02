@@ -93,11 +93,14 @@ class NewTokenView(generics.CreateAPIView):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+
     queryset = User.objects.all()
+    lookup_field = "username"
     serializer_class = UserSerializer
     permission_classes = (IsAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+    http_method_names = ['get', 'post', 'list', 'delete', 'patch']
 
 
 class MeView(GetPatchView):

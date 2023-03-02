@@ -2,6 +2,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
@@ -38,13 +39,6 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """User serializer for Users App."""
-    username = serializers.CharField(
-        max_length=150,
-        validators=[regexp_validator],
-    )
-    email = serializers.EmailField(
-        max_length=254,
-    )
 
     class Meta:
         fields = (

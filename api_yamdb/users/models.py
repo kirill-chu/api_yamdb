@@ -9,12 +9,13 @@ ROLES = [
     ("user", "Пользователь"),
 ]
 regexp_validator = RegexValidator(
-        r'^[\w.@+-]+\Z',
-        message='not valid regexp'
-    )
+    r'^[\w.@+-]+\Z',
+    message='not valid regexp'
+)
+
 
 class User(AbstractUser):
-    
+
     username = models.CharField(
         'username',
         max_length=150,
