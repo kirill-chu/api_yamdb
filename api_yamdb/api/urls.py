@@ -1,10 +1,10 @@
+"""Urls for API app."""
 from django.urls import include, path
 from rest_framework import routers
 
-from users.views import MeView, NewTokenView, SignUpView, UserViewSet
-
-from .views import (CategoryViewSet, CommentViewSet, GenreViewSet,
-                    ReviewViewSet, TitleViewSet)
+from .views import (CategoryViewSet, CommentViewSet, GenreViewSet, MeView,
+                    NewTokenView, ReviewViewSet, SignUpView, TitleViewSet,
+                    UserViewSet)
 
 router_v1 = routers.DefaultRouter()
 router_v1.register('categories', CategoryViewSet)
