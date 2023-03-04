@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, permissions, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
 from reviews.models import Category, Genre, Review, Title
 
 from .filters import TitleFilter
@@ -48,10 +48,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     """A viewset for viewing and editing Title instances."""
 
     queryset = Title.objects.all()
-    http_method_names = ('get', 'post', 'patch', 'delete')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     permission_classes = (IsAdminOrReadOnly,)
+
+    def get_queryset(self):
+        queryset = Title.objects.annotate(rating=Avg('reviews__score'))
+        return queryset.order_by('name')
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):

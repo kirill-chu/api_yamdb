@@ -4,6 +4,8 @@ from rest_framework import permissions
 class IsAdminOrReadOnly(permissions.BasePermission):
     """Object-level permission to only allow admins to edit."""
 
+    message = 'Adding or editting content not allowed.'
+
     def has_permission(self, request, view):
         return (
             request.method in permissions.SAFE_METHODS

@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from api.validators import validate_year
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -35,11 +34,8 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=256, verbose_name='name')
-    year = models.IntegerField(
-        validators=[
-            MaxValueValidator(datetime.now().year),
-            MinValueValidator(0)
-        ],
+    year = models.SmallIntegerField(
+        validators=[validate_year],
         verbose_name='year'
     )
     description = models.TextField(
@@ -81,7 +77,7 @@ class GenreTitle(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.genre} {self.title}'
+        return f'{self.genre_id} {self.title_id}'
 
 
 class Review(models.Model):

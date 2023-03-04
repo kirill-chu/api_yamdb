@@ -1,11 +1,8 @@
-from datetime import datetime
-
+from api.validators import validate_year
 from django.contrib.auth import get_user_model
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-
 from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
@@ -42,14 +39,11 @@ class TitleSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
-    rating = serializers.SerializerMethodField(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         fields = '__all__'
         model = Title
-
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
 
 
 class CreateUpdateTitleSerializer(TitleSerializer):
@@ -61,6 +55,7 @@ class CreateUpdateTitleSerializer(TitleSerializer):
     genre = serializers.SlugRelatedField(
         slug_field='slug', queryset=Genre.objects, many=True
     )
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         fields = ('name', 'year', 'description', 'category', 'genre')
@@ -71,11 +66,6 @@ class CreateUpdateTitleSerializer(TitleSerializer):
                 fields=('name', 'year', 'category')
             )
         ]
-
-    def validate_year(self, value):
-        if not (0 <= value <= datetime.now().year):
-            raise serializers.ValidationError('Check year')
-        return value
 
     def to_representation(self, instance):
         request = self.context.get('request')
