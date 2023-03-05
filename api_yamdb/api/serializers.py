@@ -156,7 +156,10 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class NewTokenSerializer(serializers.ModelSerializer):
-
+    username = serializers.CharField(
+        max_length=150,
+        validators=[regexp_validator],
+    )
     class Meta:
         fields = (
             'username',
