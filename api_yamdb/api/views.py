@@ -105,14 +105,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             review = title.reviews.get(id=review_id)
         except ObjectDoesNotExist:
             raise NotFound
-        return review.comments.all()
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-    
-    def get_serializer_context(self):
-        return super().get_serializer_context()
-        
+        return review.comments.all()        
 
 
 class SignUpView(generics.CreateAPIView):
