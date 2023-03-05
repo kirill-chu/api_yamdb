@@ -1,7 +1,7 @@
 """Views in API app."""
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -12,7 +12,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Genre, Review, Title
+
+from reviews.models import Category, Genre, Title
 
 from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
@@ -100,12 +101,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
         title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id) 
+        title = get_object_or_404(Title, id=title_id)
         try:
             review = title.reviews.get(id=review_id)
         except ObjectDoesNotExist:
             raise NotFound
-        return review.comments.all()        
+        return review.comments.all()
 
 
 class SignUpView(generics.CreateAPIView):
@@ -152,6 +153,7 @@ class SignUpView(generics.CreateAPIView):
 
 class NewTokenView(generics.CreateAPIView):
     """Class for retrive new Auth token."""
+
     serializer_class = NewTokenSerializer
     permission_classes = (permissions.AllowAny,)
 
