@@ -1,9 +1,11 @@
-from api.validators import validate_year
+"""Serializers for API app."""
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title
+
+from .validators import regexp_validator, validate_year
 
 User = get_user_model()
 
@@ -133,6 +135,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment
+
 
 class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
