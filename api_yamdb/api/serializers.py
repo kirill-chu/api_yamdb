@@ -90,8 +90,9 @@ class ReviewSerializer(serializers.ModelSerializer):
     """Serializer for Review instance."""
 
     author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True,
-        default=serializers.CurrentUserDefault())
+        slug_field='username_id', 
+        read_only=True,
+        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()))
     title = serializers.HiddenField(default=CurrentTitleDefault())
 
     class Meta:
@@ -106,7 +107,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
 
 
-class CurrentReviewDefault():
+class CurrentReviewDefault:
     """Function receive review id from path parameter."""
 
     requires_context = True
