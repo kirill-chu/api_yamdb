@@ -1,31 +1,29 @@
 """Mosels for Users App."""
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
-
-ROLES = [
-    ("admin", "Администратор"),
-    ("moderator", "Модератор"),
-    ("user", "Пользователь"),
-]
-regexp_validator = RegexValidator(
-    r'^[\w.@+-]+\Z',
-    message='not valid regexp'
-)
+from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
+    """New User class."""
 
-    username = models.CharField(
-        'username',
-        max_length=150,
-        validators=[regexp_validator],
-        unique=True
-    )
+    class Roles(models.TextChoices):
+        """Roles for useer model."""
+
+        USER = 'user', _('Пользователь')
+        MODERATOR = 'moderator', _('Модератор')
+        ADMIN = 'admin', _('Администратор')
+
     email = models.EmailField(
         'email',
         max_length=254,
         unique=True
+    )
+    role = models.CharField(
+        'Роль',
+        max_length=9,
+        choices=Roles.choices,
+        default=Roles.USER,
     )
     first_name = models.CharField(
         'Имя',
@@ -41,17 +39,25 @@ class User(AbstractUser):
         'Биография',
         blank=True,
     )
-    role = models.CharField(
-        'Роль',
-        max_length=9,
-        choices=ROLES,
-        default='user',
-    )
+
     confirmation_code = models.CharField(
         'Код подтверждения',
-        max_length=16,
+        max_length=40,
         blank=True,
     )
 
+    @property
+    def is_admin(self):
+        """Retrieve admin state."""
+        self.is_superuser
+        return self.role == self.Roles.ADMIN or self.is_superuser
+
+    @property
+    def is_moderator(self):
+        """Retrieve admoderator state."""
+        return self.role == self.Roles.MODERATOR
+
     class Meta:
+        """Users meta class."""
+
         ordering = ['username']

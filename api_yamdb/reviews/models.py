@@ -1,8 +1,8 @@
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
+from api.validators import validate_year
 
 User = get_user_model()
 
@@ -35,11 +35,8 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=256, verbose_name='name')
-    year = models.IntegerField(
-        validators=[
-            MaxValueValidator(datetime.now().year),
-            MinValueValidator(0)
-        ],
+    year = models.SmallIntegerField(
+        validators=[validate_year],
         verbose_name='year'
     )
     description = models.TextField(
@@ -81,7 +78,7 @@ class GenreTitle(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.genre} {self.title}'
+        return f'{self.genre_id} {self.title_id}'
 
 
 class Review(models.Model):
@@ -92,7 +89,7 @@ class Review(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews',
         verbose_name='author')
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         verbose_name='score')
     pub_date = models.DateTimeField(
@@ -101,6 +98,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'review'
         verbose_name_plural = 'reviews'
+        indexes = (models.Index(fields=('-pub_date',)),)
         ordering = ['-pub_date']
 
         constraints = [
@@ -109,7 +107,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return self.text
+        return f'{self.id}: {self.text[:15]}'
 
 
 class Comment(models.Model):
@@ -129,4 +127,4 @@ class Comment(models.Model):
         ordering = ['pub_date']
 
     def __str__(self):
-        return self.text
+        return f'{self.id}: {self.text[:15]}'

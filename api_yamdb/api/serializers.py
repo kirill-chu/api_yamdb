@@ -1,12 +1,14 @@
-from datetime import datetime
-
+"""Serializers for API app."""
 from django.contrib.auth import get_user_model
-from django.db.models import Avg
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Review, Title
+
+from .validators import regexp_validator, validate_year
 
 User = get_user_model()
 
@@ -42,14 +44,11 @@ class TitleSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
-    rating = serializers.SerializerMethodField(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         fields = '__all__'
         model = Title
-
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
 
 
 class CreateUpdateTitleSerializer(TitleSerializer):
@@ -61,6 +60,7 @@ class CreateUpdateTitleSerializer(TitleSerializer):
     genre = serializers.SlugRelatedField(
         slug_field='slug', queryset=Genre.objects, many=True
     )
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         fields = ('name', 'year', 'description', 'category', 'genre')
@@ -72,23 +72,19 @@ class CreateUpdateTitleSerializer(TitleSerializer):
             )
         ]
 
-    def validate_year(self, value):
-        if not (0 <= value <= datetime.now().year):
-            raise serializers.ValidationError('Check year')
-        return value
-
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
         return TitleSerializer(instance, context=context).data
 
 
-class CurrentTitleDefault():
+class CurrentTitleDefault:
     """Function receive title id from path parameter."""
 
     requires_context = True
 
     def __call__(self, serializer_field):
+        print(dir(serializer_field.context['request']))
         context = serializer_field.context['request'].parser_context
         return get_object_or_404(
             Title, id=context.get('kwargs').get('title_id'))
@@ -113,23 +109,25 @@ class ReviewSerializer(serializers.ModelSerializer):
             )
         ]
 
-
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        fields = '__all__'
-        model = User
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        return Review.objects.create(**validated_data)
 
 
-class CurrentReviewDefault():
+class CurrentReviewDefault:
     """Function receive review id from path parameter."""
 
     requires_context = True
 
     def __call__(self, serializer_field):
         context = serializer_field.context['request'].parser_context
-        return get_object_or_404(
-            Review, id=context.get('kwargs').get('review_id'))
+        title_id = context.get('kwargs').get('title_id')
+        title = get_object_or_404(Title, id=title_id)
+        try:
+            return title.reviews.get(
+                id=context.get('kwargs').get('review_id'))
+        except ObjectDoesNotExist:
+            raise NotFound
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -143,3 +141,87 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        return Comment.objects.create(**validated_data)
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150,
+        validators=[regexp_validator],
+    )
+    email = serializers.EmailField(
+        max_length=254,
+    )
+
+    def validate_username(self, value):
+        if value.lower() == 'me':
+            raise serializers.ValidationError(
+                f'Использование имени {value} '
+                f'в качестве username запрещено.'
+            )
+        return value
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+        )
+        model = User
+
+
+class NewTokenSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150,
+        validators=[regexp_validator],
+    )
+
+    class Meta:
+        fields = (
+            'username',
+            'confirmation_code',
+        )
+        model = User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """User serializer for Users App."""
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
+        model = User
+
+
+class MeSerializer(serializers.ModelSerializer):
+    """User serializer for Users App."""
+
+    username = serializers.CharField(
+        max_length=150,
+        validators=[regexp_validator],
+        required=False
+    )
+    email = serializers.EmailField(
+        max_length=254,
+        required=False
+    )
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
+        model = User
+        read_only_fields = ('role',)

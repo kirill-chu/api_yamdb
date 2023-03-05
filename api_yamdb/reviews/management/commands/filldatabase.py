@@ -1,9 +1,21 @@
+import logging
+import sys
 from csv import DictReader
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-
 from reviews.models import Category, Comment, Genre, Review, Title
-from users.models import User
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter(
+    '%(asctime)s [%(levelname)s] %(filename)s/%(funcName)s %(message)s'
+)
+logger.addHandler(handler)
+handler.setFormatter(formatter)
+
+User = get_user_model()
 
 DATAPATH = {
     Category: 'static/data/category.csv',
@@ -21,7 +33,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for model in DATAPATH:
-            print(f'Start {model.__name__} data transfer')
+            logger.debug(f'Start {model.__name__} data transfer')
             try:
                 objs = [
                     model.objects.create(**obj)
@@ -30,9 +42,11 @@ class Command(BaseCommand):
                     )
                 ]
                 model.objects.bulk_create(objs=objs, ignore_conflicts=True)
-                print(f'Data successfully loaded into {model.__name__}\n')
-            except Exception as erorr:
-                print(erorr)
-                print(
-                    f'We have a problem with data or {model.__name__} model\n'
+                logger.debug(
+                    f'Data successfully loaded into {model.__name__}\n'
+                )
+            except Exception:
+                logger.error(
+                    f'We have a problem with data or {model.__name__} model\n',
+                    exc_info=True
                 )
