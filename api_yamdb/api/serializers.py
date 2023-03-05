@@ -108,6 +108,11 @@ class ReviewSerializer(serializers.ModelSerializer):
                 fields=('author', 'title')
             )
         ]
+    
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        review = Review.objects.create(**validated_data)
+        return review
 
 
 class CurrentReviewDefault:
