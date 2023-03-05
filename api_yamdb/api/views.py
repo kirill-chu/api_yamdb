@@ -1,4 +1,5 @@
 """Views in API app."""
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -7,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, generics, mixins, permissions, status,
                             viewsets)
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
@@ -101,13 +103,19 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
         title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        title.t
-        review = get_object_or_404(Review, id=review_id)
+        title = get_object_or_404(Title, id=title_id) 
+        try:
+            review = title.reviews.get(id=review_id)
+        except ObjectDoesNotExist:
+            raise NotFound
         return review.comments.all()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+    
+    def get_serializer_context(self):
+        return super().get_serializer_context()
+        
 
 
 class SignUpView(generics.CreateAPIView):

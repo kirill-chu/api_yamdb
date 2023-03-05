@@ -106,7 +106,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.id}: {self.text[:40]}'
+        return f'{self.id}: {self.text[:15]}'
 
 
 class Comment(models.Model):

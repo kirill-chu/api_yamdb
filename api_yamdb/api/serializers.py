@@ -1,7 +1,9 @@
 """Serializers for API app."""
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -81,6 +83,7 @@ class CurrentTitleDefault:
     requires_context = True
 
     def __call__(self, serializer_field):
+        print(dir(serializer_field.context['request']))
         context = serializer_field.context['request'].parser_context
         return get_object_or_404(
             Title, id=context.get('kwargs').get('title_id'))
@@ -90,9 +93,9 @@ class ReviewSerializer(serializers.ModelSerializer):
     """Serializer for Review instance."""
 
     author = serializers.SlugRelatedField(
-        slug_field='username_id', 
+        slug_field='username', 
         read_only=True,
-        default=serializers.CreateOnlyDefault(serializers.CurrentUserDefault()))
+        default=serializers.CurrentUserDefault())
     title = serializers.HiddenField(default=CurrentTitleDefault())
 
     class Meta:
@@ -114,8 +117,13 @@ class CurrentReviewDefault:
 
     def __call__(self, serializer_field):
         context = serializer_field.context['request'].parser_context
-        return get_object_or_404(
-            Review, id=context.get('kwargs').get('review_id'))
+        title_id = context.get('kwargs').get('title_id')
+        title = get_object_or_404(Title, id=title_id)
+        try:
+            review = title.reviews.get(id=context.get('kwargs').get('review_id'))
+        except ObjectDoesNotExist:
+            raise NotFound
+        return review
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -129,7 +137,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment
-
+       
 
 class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
