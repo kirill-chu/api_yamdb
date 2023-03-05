@@ -1,8 +1,6 @@
 """Views in API app."""
-import random
-import string
-
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -18,8 +16,8 @@ from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsOwnerAdminModeratorOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CreateUpdateTitleSerializer, GenreSerializer,
-                          MeSerializer, ReviewSerializer, SignUpSerializer,
-                          TitleSerializer, UserSerializer)
+                          MeSerializer, NewTokenSerializer, ReviewSerializer,
+                          SignUpSerializer, TitleSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -120,16 +118,13 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class SignUpView(generics.CreateAPIView):
-    """Class for retrive conconfirmation_code."""
+    """Class for registration and retrive conconfirmation_code."""
 
     permission_classes = (permissions.AllowAny,)
     serializer_class = SignUpSerializer
 
-    def get_code(self):
-        letters = string.ascii_lowercase
-        return ''.join(random.choice(letters) for i in range(16))
-
     def send_code(self, code, email):
+        """Send email with confirmation_code."""
         send_mail(
             'code',
             f'confirmation_code = {code}',
@@ -145,46 +140,38 @@ class SignUpView(generics.CreateAPIView):
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
         if User.objects.filter(username=username, email=email).exists():
-            user = User.objects.filter(username=username, email=email).get()
-            user.confirmation_code = self.get_code()
-            user.save()
-            self.send_code(user.confirmation_code, user.email)
-            return Response(request.data, status=status.HTTP_200_OK)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         if (User.objects.filter(email=email).exists()
            or User.objects.filter(username=username).exists()):
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def perform_create(self, serializer):
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
         user, _created = User.objects.get_or_create(
-            username=username, email=email,
-            confirmation_code=self.get_code()
+            username=username, email=email
         )
+        user.confirmation_code = default_token_generator.make_token(user)
         user.save()
         self.send_code(user.confirmation_code, user.email)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class NewTokenView(generics.CreateAPIView):
     """Class for retrive new Auth token."""
-
+    serializer_class = NewTokenSerializer
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        if "username" not in request.data:
-            response = {
-                "field_not_found": "username"
-            }
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        if "confirmation_code" not in request.data:
-            response = {
-                "field_not_found": "confirmation_code"
-            }
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        username = request.data["username"]
-        confirmation_code = request.data["confirmation_code"]
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
         user = get_object_or_404(User, username=username)
-        if user.confirmation_code == confirmation_code:
-            refresh = AccessToken.for_user(user)
+        if default_token_generator.check_token(user):
             response = {
-                'token': str(refresh.access_token),
+                'token': str(AccessToken.for_user(user)),
             }
             return Response(response, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -193,12 +180,12 @@ class NewTokenView(generics.CreateAPIView):
 class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
-    lookup_field = "username"
+    lookup_field = 'username'
     serializer_class = UserSerializer
     permission_classes = (IsAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
-    http_method_names = ['get', 'post', 'list', 'delete', 'patch']
+    http_method_names = ('get', 'post', 'list', 'delete', 'patch')
 
 
 class MeView(GetPatchView):

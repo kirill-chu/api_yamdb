@@ -2,19 +2,15 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title
 
-User = get_user_model()
+from .validators import regexp_validator
 
-regexp_validator = RegexValidator(
-    r'^[\w.@+-]+\Z',
-    message='not valid regexp'
-)
+User = get_user_model()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -165,6 +161,16 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = (
             'username',
             'email',
+        )
+        model = User
+
+
+class NewTokenSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = (
+            'username',
+            'confirmation_code',
         )
         model = User
 
