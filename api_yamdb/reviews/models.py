@@ -88,7 +88,7 @@ class Review(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews',
         verbose_name='author')
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         verbose_name='score')
     pub_date = models.DateTimeField(
@@ -97,6 +97,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'review'
         verbose_name_plural = 'reviews'
+        indexes = (models.Index(fields=('-pub_date',)),)
         ordering = ['-pub_date']
 
         constraints = [
@@ -105,7 +106,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return self.text
+        return f'{self.id}: {self.text[:40]}'
 
 
 class Comment(models.Model):

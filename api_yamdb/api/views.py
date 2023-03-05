@@ -63,14 +63,11 @@ class GenreViewSet(CreateDestroyListViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """A viewset for viewing and editing Title instances."""
 
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')).order_by('name')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     permission_classes = (IsAdminOrReadOnly,)
-
-    def get_queryset(self):
-        queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-        return queryset.order_by('name')
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -91,7 +88,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        pass
         serializer.save(author=self.request.user)
 
 

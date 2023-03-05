@@ -75,7 +75,7 @@ class CreateUpdateTitleSerializer(TitleSerializer):
         return TitleSerializer(instance, context=context).data
 
 
-class CurrentTitleDefault():
+class CurrentTitleDefault:
     """Function receive title id from path parameter."""
 
     requires_context = True
