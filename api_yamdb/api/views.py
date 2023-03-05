@@ -172,6 +172,7 @@ class NewTokenView(generics.CreateAPIView):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """Users ViewSet."""
 
     queryset = User.objects.all()
     lookup_field = 'username'
@@ -183,6 +184,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class MeView(GetPatchView):
+    """View for /me."""
+
     queryset = User.objects.all()
     serializer_class = MeSerializer
     permission_classes = (permissions.IsAuthenticated,)
