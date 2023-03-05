@@ -1,16 +1,24 @@
+"""Views in API app."""
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Avg
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, permissions, viewsets
+from rest_framework import (filters, generics, mixins, permissions, status,
+                            viewsets)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title
 
 from .filters import TitleFilter
-from .permissions import IsAdminOrReadOnly, IsOwnerAdminModeratorOrReadOnly
+from .permissions import (IsAdmin, IsAdminOrReadOnly,
+                          IsOwnerAdminModeratorOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CreateUpdateTitleSerializer, GenreSerializer,
-                          ReviewSerializer, TitleSerializer, UserSerializer)
+                          MeSerializer, NewTokenSerializer, ReviewSerializer,
+                          SignUpSerializer, TitleSerializer, UserSerializer)
 
 User = get_user_model()
 
