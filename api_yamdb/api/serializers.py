@@ -106,13 +106,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        fields = '__all__'
-        model = User
-
-
 class CurrentReviewDefault():
     """Function receive review id from path parameter."""
 
