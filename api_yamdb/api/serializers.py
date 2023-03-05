@@ -84,7 +84,6 @@ class CurrentTitleDefault:
     requires_context = True
 
     def __call__(self, serializer_field):
-        print(dir(serializer_field.context['request']))
         context = serializer_field.context['request'].parser_context
         return get_object_or_404(
             Title, id=context.get('kwargs').get('title_id'))
