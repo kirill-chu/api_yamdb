@@ -7,8 +7,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Review, Title
-from .validators import regexp_validator, validate_year
 
+from .validators import regexp_validator, validate_year
 
 User = get_user_model()
 
@@ -94,8 +94,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     """Serializer for Review instance."""
 
     author = serializers.SlugRelatedField(
-        slug_field='username', 
-        read_only=True,
+        slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault())
     title = serializers.HiddenField(default=CurrentTitleDefault())
 
@@ -109,11 +108,10 @@ class ReviewSerializer(serializers.ModelSerializer):
                 fields=('author', 'title')
             )
         ]
-    
+
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
-        review = Review.objects.create(**validated_data)
-        return review
+        return Review.objects.create(**validated_data)
 
 
 class CurrentReviewDefault:
@@ -126,10 +124,10 @@ class CurrentReviewDefault:
         title_id = context.get('kwargs').get('title_id')
         title = get_object_or_404(Title, id=title_id)
         try:
-            review = title.reviews.get(id=context.get('kwargs').get('review_id'))
+            return title.reviews.get(
+                id=context.get('kwargs').get('review_id'))
         except ObjectDoesNotExist:
             raise NotFound
-        return review
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -143,12 +141,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment
-    
+
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
-        comment = Comment.objects.create(**validated_data)
-        return comment
-       
+        return Comment.objects.create(**validated_data)
+
 
 class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -180,6 +177,7 @@ class NewTokenSerializer(serializers.ModelSerializer):
         max_length=150,
         validators=[regexp_validator],
     )
+
     class Meta:
         fields = (
             'username',
