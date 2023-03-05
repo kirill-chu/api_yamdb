@@ -23,10 +23,18 @@ from .serializers import (CategorySerializer, CommentSerializer,
 User = get_user_model()
 
 
+class GetPatchView(generics.UpdateAPIView, generics.RetrieveAPIView):
+    """Get+Patch mix View."""
+
+    pass
+
+
 class CreateDestroyListViewSet(mixins.CreateModelMixin,
                                mixins.DestroyModelMixin,
                                mixins.ListModelMixin,
                                viewsets.GenericViewSet):
+    """Create+Destroy+list mix ViewSet."""
+
     pass
 
 
