@@ -162,8 +162,10 @@ class NewTokenView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
+        confirmation_code = serializer.validated_data.get('confirmation_code')
         user = get_object_or_404(User, username=username)
-        if default_token_generator.check_token(user):
+        if default_token_generator.check_token(user=user,
+                                               token=confirmation_code):
             response = {
                 'token': str(AccessToken.for_user(user)),
             }
