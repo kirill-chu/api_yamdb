@@ -126,4 +126,4 @@ class Comment(models.Model):
         ordering = ['pub_date']
 
     def __str__(self):
-        return self.text
+        return f'{self.id}: {self.text[:15]}'
