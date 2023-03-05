@@ -130,16 +130,6 @@ class CurrentReviewDefault:
         except ObjectDoesNotExist:
             raise NotFound
         return review
-    
-
-class CurrentUserDefault:
-    """Function return current user."""
-
-    requires_context = True
-
-    def __call__(self, serializer_field):
-       print((serializer_field.context['request'].user.username))
-       return serializer_field.context['request'].user
 
 
 class CommentSerializer(serializers.ModelSerializer):
