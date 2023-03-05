@@ -1,9 +1,11 @@
-from api.validators import validate_year
+"""Serializers for API app."""
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title
+
+from .validators import regexp_validator, validate_year
 
 User = get_user_model()
 
@@ -104,13 +106,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        fields = '__all__'
-        model = User
-
-
 class CurrentReviewDefault():
     """Function receive review id from path parameter."""
 
@@ -133,3 +128,79 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150,
+        validators=[regexp_validator],
+    )
+    email = serializers.EmailField(
+        max_length=254,
+    )
+
+    def validate_username(self, value):
+        if value.lower() == 'me':
+            raise serializers.ValidationError(
+                f'Использование имени {value} '
+                f'в качестве username запрещено.'
+            )
+        return value
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+        )
+        model = User
+
+
+class NewTokenSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = (
+            'username',
+            'confirmation_code',
+        )
+        model = User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """User serializer for Users App."""
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
+        model = User
+
+
+class MeSerializer(serializers.ModelSerializer):
+    """User serializer for Users App."""
+
+    username = serializers.CharField(
+        max_length=150,
+        validators=[regexp_validator],
+        required=False
+    )
+    email = serializers.EmailField(
+        max_length=254,
+        required=False
+    )
+
+    class Meta:
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
+        model = User
+        read_only_fields = ('role',)
