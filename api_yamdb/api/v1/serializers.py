@@ -120,13 +120,9 @@ class CurrentReviewDefault:
 
     def __call__(self, serializer_field):
         context = serializer_field.context['request'].parser_context
-        title_id = context.get('kwargs').get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        try:
-            return title.reviews.get(
-                id=context.get('kwargs').get('review_id'))
-        except ObjectDoesNotExist:
-            raise NotFound
+        return get_object_or_404(
+            Review, title__id=context.get('kwargs').get('title_id'),
+            id=context.get('kwargs').get('review_id'))
 
 
 class CommentSerializer(serializers.ModelSerializer):
