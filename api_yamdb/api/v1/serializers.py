@@ -1,14 +1,12 @@
 """Serializers for API app."""
+
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Review, Title
-
-from .validators import regexp_validator, validate_year
+from users.validators import regexp_validator
 
 User = get_user_model()
 
@@ -60,7 +58,6 @@ class CreateUpdateTitleSerializer(TitleSerializer):
     genre = serializers.SlugRelatedField(
         slug_field='slug', queryset=Genre.objects, many=True
     )
-    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         fields = ('name', 'year', 'description', 'category', 'genre')
