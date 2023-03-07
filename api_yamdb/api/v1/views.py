@@ -7,21 +7,18 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (
-    filters, generics, mixins, permissions, status, viewsets,
-)
+    filters, generics, mixins, permissions, status, viewsets,)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .filters import TitleFilter
 from .permissions import (
-    IsAdmin, IsAdminOrReadOnly, IsOwnerAdminModeratorOrReadOnly,
-)
+    IsAdmin, IsAdminOrReadOnly, IsOwnerAdminModeratorOrReadOnly,)
 from .serializers import (
     CategorySerializer, CommentSerializer, CreateUpdateTitleSerializer,
     GenreSerializer, MeSerializer, NewTokenSerializer, ReviewSerializer,
-    SignUpSerializer, TitleSerializer, UserSerializer,
-)
+    SignUpSerializer, TitleSerializer, UserSerializer,)
 from reviews.models import Category, Genre, Review, Title
 
 User = get_user_model()
