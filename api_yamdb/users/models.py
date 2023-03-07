@@ -46,6 +46,11 @@ class User(AbstractUser):
         blank=True,
     )
 
+    class Meta:
+        """Users meta class."""
+
+        ordering = ['username']
+
     @property
     def is_admin(self):
         """Retrieve admin state."""
@@ -56,8 +61,3 @@ class User(AbstractUser):
     def is_moderator(self):
         """Retrieve admoderator state."""
         return self.role == self.Roles.MODERATOR
-
-    class Meta:
-        """Users meta class."""
-
-        ordering = ['username']
