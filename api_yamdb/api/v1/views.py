@@ -136,11 +136,11 @@ class SignUpView(generics.CreateAPIView):
     def perform_create(self, serializer):
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        user, _created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             username=username, email=email
         )
         user.confirmation_code = default_token_generator.make_token(user)
-        user.save()
+        user.save(update_fields=['username', 'email', 'confirmation_code'])
         self.send_code(user.confirmation_code, user.email)
 
 

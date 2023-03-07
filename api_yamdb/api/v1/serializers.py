@@ -6,7 +6,8 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Review, Title
-from users.validators import regexp_validator
+
+from .validators import regexp_validator
 
 User = get_user_model()
 
